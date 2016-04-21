@@ -41,27 +41,6 @@ public class MainActivity extends AppCompatActivity {
             ab.create().show();
         }
 
-
-        Shell shell = null;
-        try {
-            shell = RootTools.getShell(true);
-        } catch(IOException e) {
-
-        } catch(TimeoutException | com.stericson.RootShell.exceptions.RootDeniedException e) {
-            AlertDialog.Builder ab = new AlertDialog.Builder(this);
-            ab.setTitle(R.string.no_root);
-            ab.setMessage(R.string.no_root_description);
-            ab.setPositiveButton(R.string.ok, null);
-            ab.create().show();
-        }
-        if(shell != null) {
-            try {
-                shell.add(new Command(0, "echo Test_1", "echo Test_2"));
-            } catch(IOException e) {
-
-            }
-        }
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,4 +72,5 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
 }
