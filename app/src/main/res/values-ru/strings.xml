@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TestApp2</string>
+    <string name="action_settings">Настройки</string>
+    <string name="system_app">Системное</string>
+    <string name="user_app">Пользовательское</string>
+    <string name="convert_to_system">Преобразовать в системное приложение?</string>
+    <string name="convert_to_user">Преобразовать в пользовательское приложение?</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="no_root">Нет прав суперпользователя</string>
+    <string name="no_root_description">Похоже, у вас отсутствует рут или же вы запретили мне доступ. Вы можете продолжить пользоваться приложением, но вы не сможете переносить приложения.</string>
+    <string name="ok">Окей</string>
+</resources>
