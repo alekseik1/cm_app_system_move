@@ -43,6 +43,8 @@ public class AppRecyclerViewAdapter extends RecyclerView.Adapter<AppRecyclerView
             appIcon = (ImageView) v.findViewById(R.id.appIcon);
         }
 
+
+        //TODO: Рассмотреть случай, когда обновленное системное приложение
         @Override
         public void onClick(View v) {
             Log.d("click", String.valueOf(getPosition()));
@@ -50,7 +52,7 @@ public class AppRecyclerViewAdapter extends RecyclerView.Adapter<AppRecyclerView
                 ab = new AlertDialog.Builder(v.getContext());
                 final Context context = v.getContext();
                 final short dest = packageDest(apps.get(getPosition()));
-                if(dest == 0 || dest == 1) ab.setMessage(R.string.convert_to_user);
+                if(dest == 0) ab.setMessage(R.string.convert_to_user);
                 else ab.setMessage(R.string.convert_to_system);
                 AlertDialog.OnClickListener ocl = new AlertDialog.OnClickListener() {
 
@@ -99,18 +101,21 @@ public class AppRecyclerViewAdapter extends RecyclerView.Adapter<AppRecyclerView
         } catch(NullPointerException e) {
             e.printStackTrace();
         }
-        if(d == 0 || d == 1) {
+        if(d == 0) {
             vh.appWhere.setText(R.string.system_app);
             vh.appWhere.setTextColor(res.getColor(R.color.orange));
-        } else {
+        } else if(d == 2) {
             vh.appWhere.setText(R.string.user_app);
             vh.appWhere.setTextColor(res.getColor(R.color.green));
+        } else if(d == 1) {
+            vh.appWhere.setText(R.string.updated_app);
+            vh.appWhere.setTextColor(res.getColor(R.color.blue));
         }
     }
 
     public short packageDest(ApplicationInfo applicationInfo) { // 0 - system app; 1 - updated system app; 2 - user app
-        if((applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0) return 0;
         if((applicationInfo.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0) return 1;
+        if((applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0) return 0;
         return 2;
     }
 

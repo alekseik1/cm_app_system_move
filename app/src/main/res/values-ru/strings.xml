@@ -11,4 +11,5 @@
     <string name="no_root">Нет прав суперпользователя</string>
     <string name="no_root_description">Похоже, у вас отсутствует рут или же вы запретили мне доступ. Вы можете продолжить пользоваться приложением, но вы не сможете переносить приложения.</string>
     <string name="ok">Окей</string>
+    <string name="updated_app">Обновленное системное</string>
 </resources>
