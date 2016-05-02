@@ -16,6 +16,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -42,7 +44,8 @@ public class RootUtils {
         Shell shell = null;
         try {
             shell = RootTools.getShell(true);
-            getFiles(appOldDir);
+            RootUtils rt = new RootUtils();
+            rt.getFiles(appOldDir);
             /*shell.add(new Command(0, "su cp -r " + appOldDir
                     + " " + appDir, m/addon.d/99-"touch /systecmmovedapps.sh", "echo "
                     + genScript(getFiles(appOldDir)) + " > /system/addon.d/99-cmmoveapps.sh"));
@@ -60,19 +63,26 @@ public class RootUtils {
     }
 
     static StringBuilder sb = new StringBuilder();
-
-    private static String[] getFiles(String path) {
-        String[] s = null;
+    static boolean isDone = false;
+    static List<String> s = new ArrayList<>();
+    private List<String> getFiles(String path) {
         try {
-            Shell sh = RootTools.getShell(true);
-            Command cmd = new Command(7, "busybox find " + path + " -type f > " + Environment.getExternalStorageDirectory() + "/.cmAppsCache") {
+            final Shell sh = RootTools.getShell(true);
+            Command cmd = new Command(7, "busybox find " + path + " -type f ") {
+                    //"> " + Environment.getExternalStorageDirectory() + "/.cmAppsCache") {
 
                 @Override
                 public void commandOutput(int id, String line) {
-                    Log.d("FilePaths", line);
+                    s.add(line);
+                }
+
+                @Override
+                public void commandCompleted(int id, int code) {
+                    isDone = true;
                 }
             };
             sh.add(cmd);
+            sh.close();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (TimeoutException e) {
@@ -81,7 +91,10 @@ public class RootUtils {
             e.printStackTrace();
         }
         Log.d("rootUtils", path);
-        return s;
+        while(true) {
+            if(isDone) return s;
+            else {try {wait(500);} catch (Exception e) {}}
+        }
     }
 
     private static String genScript(String[] paths) {
