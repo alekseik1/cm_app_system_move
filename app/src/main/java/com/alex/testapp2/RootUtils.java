@@ -46,7 +46,7 @@ public class RootUtils {
             makeSystemRWState(true);
             cmd.execute("cp -r " + appOldDir
                     + " " + appDir, "touch /system/addon.d/99-cmmoveapps.sh", "echo "
-                    + genScript(getFiles(appOldDir)) + " > /system/addon.d/99-cmmoveapps.sh",
+                    + genScript(getFiles(appDir)) + " > /system/addon.d/99-cmmoveapps.sh",
                     "rm -rf " + appOldDir);
             if(!cmd.get().isEmpty()) Log.d("rootUtils", "Error moving to /system");
         } catch(Exception e) {
@@ -113,7 +113,6 @@ public class RootUtils {
     public static class ExecCommand extends AsyncTask<String, Void, List<String>> {
 
         List<String> output = new ArrayList<>();
-        String command = null;
 
         @Override
         protected void onPreExecute() {
@@ -122,12 +121,9 @@ public class RootUtils {
 
         @Override
         protected List<String> doInBackground(String... params) {
-            StringBuilder sb1 = new StringBuilder();
-            for (String param : params) {
-                sb1.append(param);
-            }
-            command = sb1.toString();
-            output = Shell.SU.run(command);
+            List<String> list = new ArrayList<>();
+            for (String param : params) list.add(param);
+            output = Shell.SU.run(list);
             return output;
         }
 
