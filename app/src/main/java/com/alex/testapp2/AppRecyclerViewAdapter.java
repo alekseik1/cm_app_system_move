@@ -43,8 +43,6 @@ public class AppRecyclerViewAdapter extends RecyclerView.Adapter<AppRecyclerView
             appIcon = (ImageView) v.findViewById(R.id.appIcon);
         }
 
-
-        //TODO: Рассмотреть случай, когда обновленное системное приложение
         @Override
         public void onClick(View v) {
             Log.d("click", String.valueOf(getPosition()));
@@ -53,14 +51,17 @@ public class AppRecyclerViewAdapter extends RecyclerView.Adapter<AppRecyclerView
                 final Context context = v.getContext();
                 final short dest = packageDest(apps.get(getPosition()));
                 if(dest == 0) ab.setMessage(R.string.convert_to_user);
-                else ab.setMessage(R.string.convert_to_system);
+                else if(dest == 2) ab.setMessage(R.string.convert_to_system);
+                else ab.setMessage(R.string.integrate_to_system);
                 AlertDialog.OnClickListener ocl = new AlertDialog.OnClickListener() {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if(which == AlertDialog.BUTTON_POSITIVE) {
-                            if(dest == 0 || dest == 1) {
+                            if(dest == 0) {
                                 RootUtils.moveToUser(apps.get(getPosition()), context);
+                            } else if(dest == 2) {
+                                RootUtils.moveToSystem(apps.get(getPosition()), context);
                             } else {
                                 RootUtils.moveToSystem(apps.get(getPosition()), context);
                             }

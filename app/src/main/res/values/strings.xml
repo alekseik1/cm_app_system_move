@@ -11,4 +11,5 @@
     <string name="no_root_description">It seems like you don\'t have su binaries installed on your system or you denied my superuser request. You may continue using this app but you won\'t be able to move applications.</string>
     <string name="ok">Ok</string>
     <string name="updated_app">Updated system app</string>
+    <string name="integrate_to_system">Move updates to /system?</string>
 </resources>

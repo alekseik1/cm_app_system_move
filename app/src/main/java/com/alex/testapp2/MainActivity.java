@@ -7,17 +7,10 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-
-import com.stericson.RootShell.execution.Command;
-import com.stericson.RootShell.execution.Shell;
-import com.stericson.RootTools.RootTools;
-
-import java.io.IOException;
-import java.util.concurrent.TimeoutException;
+import eu.chainfire.libsuperuser.Shell;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         ft.replace(R.id.fragment, f1);
         ft.commit();
 
-        if(!RootTools.isRootAvailable()) {
+        if(!Shell.SU.available()) {
             AlertDialog.Builder ab = new AlertDialog.Builder(this);
             ab.setTitle(R.string.no_root);
             ab.setMessage(R.string.no_root_description);
