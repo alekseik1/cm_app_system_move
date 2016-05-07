@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">TestApp2</string>
+    <string name="app_name">Apps CM</string>
     <string name="action_settings">Настройки</string>
     <string name="system_app">Системное</string>
     <string name="user_app">Пользовательское</string>
