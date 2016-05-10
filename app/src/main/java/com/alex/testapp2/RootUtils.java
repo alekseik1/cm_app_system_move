@@ -17,6 +17,9 @@ import eu.chainfire.libsuperuser.Shell;
  */
 public class RootUtils {
 
+    public static final String LIST_FILE_NAME = "/system/addon.d/cm-saved-files.txt";
+    private static final String LOG_TAG = "rootUtils";
+
     public static void moveToSystem(ApplicationInfo app, Context context) {
         StringBuilder sb = new StringBuilder();
         String appDir;
@@ -47,7 +50,7 @@ public class RootUtils {
         try {
             makeSystemRWState(true);
             cmd.execute("cp -r " + appOldDir + " " + appDir, "rm -rf "+appOldDir);
-            if(!cmd.get().isEmpty()) Log.d("rootUtils", "Error moving to /system");
+            if(!cmd.get().isEmpty()) Log.d(LOG_TAG, "Error moving to /system");
             makeScript(getFiles(appDir), context, scriptName);
         } catch(Exception e) {
             e.printStackTrace();
@@ -62,8 +65,19 @@ public class RootUtils {
         } catch(Exception e) {
             e.printStackTrace();
         }
-        Log.d("rootUtils", path);
+        Log.d(LOG_TAG, path);
         return result;
+    }
+
+    private static boolean isPathAlreadyInBackupListFile(String path) throws IllegalStateException {
+        ExecCommand cmd = new ExecCommand();
+        try {
+            List<String> s = cmd.execute("if busybox grep -q '" + path + "' " + LIST_FILE_NAME + "; then echo 0; else echo 1; fi").get();
+            return s.get(0).equals("0");
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        throw new IllegalStateException();
     }
 
     private static String makeScript(List<String> paths, Context context, String scriptName) {
@@ -72,12 +86,26 @@ public class RootUtils {
         boolean oldAndroid = true;
         if(Build.VERSION.SDK_INT >= 21) oldAndroid = false;
         for(String a : paths) {
-            if(oldAndroid) sb1.append(a.substring(a.indexOf("/system/priv-app")+"/system/".length()+1)).append("\n");
-            else sb1.append(a.substring(a.indexOf("/system/app")+"/system/".length()+1)).append("\n");
+            if (!isPathAlreadyInBackupListFile(a)) {
+                if (oldAndroid)
+                    sb1.append(a.substring(a.indexOf("/system/priv-app") + "/system/".length() + 1)).append("\n");
+                else
+                    sb1.append(a.substring(a.indexOf("/system/app") + "/system/".length() + 1)).append("\n");
+            }
         }
-        //sb1.append("/");
+        List<String> realPaths = null;
         try {
-            List<String> res = cmd.execute("echo '#!/sbin/sh\n" +
+            cmd.execute("echo '" + sb1.toString() + "' >> " + LIST_FILE_NAME).get();
+            realPaths = (new ExecCommand().execute("cat " + LIST_FILE_NAME).get());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        sb1.delete(0, sb1.length());
+        for(String a : realPaths) {
+            sb1.append(a+"\n");
+        }
+        try {
+            List<String> res = (new ExecCommand().execute("echo '#!/sbin/sh\n" +
                     ". /tmp/backuptool.functions\n" +
                     "list_files() {\n" +
                     "cat <<EOF\n" + sb1.toString() +
@@ -108,9 +136,9 @@ public class RootUtils {
                     "  post-restore)\n" +
                     "    # Stub\n" +
                     "  ;;\n" +
-                    "esac' >> /system/addon.d/99-"+ scriptName +".sh").get();
+                    "esac' > /system/addon.d/60-"+ "cmSave" +".sh").get());
             //List<String> res = cmd.execute("sed '1,/EOF/s//" + sb1.toString() + "\nEOF/' /system/addon.d/99-save.sh").get();
-            Log.d("rootUtils", "sed result: " + res);
+            Log.d(LOG_TAG, "sed result: " + res);
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -125,7 +153,7 @@ public class RootUtils {
          else        // Значит, лежжит в /system/app
             sb.append("/data/app").append(appOldDir.substring("/system/app".length()));
         String appDir = sb.toString();
-        Log.d("rootUtils", sb.toString());
+        Log.d(LOG_TAG, sb.toString());
         if(!Shell.SU.available()) {
             AlertDialog.Builder ab = new AlertDialog.Builder(context);
             ab.setTitle(R.string.no_root);
@@ -137,7 +165,7 @@ public class RootUtils {
             makeSystemRWState(true);
             ExecCommand cmd = new ExecCommand();
             cmd.execute("cp -r " + appOldDir + " " + appDir, "rm -rf " + appOldDir);
-            if(!cmd.get().isEmpty()) Log.d("rootUtils", "Error moving to user");
+            if(!cmd.get().isEmpty()) Log.d(LOG_TAG, "Error moving to user");
         } catch(Exception e) {
             e.printStackTrace();
         }
