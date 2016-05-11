@@ -4,12 +4,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
-import android.graphics.BitmapFactory;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,7 +24,7 @@ import java.util.List;
 public class AppRecyclerViewAdapter extends RecyclerView.Adapter<AppRecyclerViewAdapter.AppViewHolder> {
 
     List <ApplicationInfo> apps;
-    List<String> appNames;
+    List<String> appNames = new ArrayList<>();
     PackageManager pm;
     Resources res;
 
@@ -49,6 +48,8 @@ public class AppRecyclerViewAdapter extends RecyclerView.Adapter<AppRecyclerView
             if(ad == null) {
                 ab = new AlertDialog.Builder(v.getContext());
                 final Context context = v.getContext();
+                final View view = v;
+                final Toolbar tv = (Toolbar) v.getRootView().findViewById(R.id.toolbar);
                 final short dest = packageDest(apps.get(getPosition()));
                 if(dest == 0) ab.setMessage(R.string.convert_to_user);
                 else if(dest == 2) ab.setMessage(R.string.convert_to_system);
@@ -65,6 +66,8 @@ public class AppRecyclerViewAdapter extends RecyclerView.Adapter<AppRecyclerView
                             } else {
                                 RootUtils.moveToSystem(apps.get(getPosition()), context);
                             }
+                            tv.setSubtitle(R.string.need_reboot);
+                            tv.setSubtitleTextColor(view.getResources().getColor(R.color.orange));
                         }
                     }
                 };
@@ -80,8 +83,7 @@ public class AppRecyclerViewAdapter extends RecyclerView.Adapter<AppRecyclerView
         }
     }
 
-    public AppRecyclerViewAdapter(List apps, List<String> appNames, PackageManager pm, Resources res) {
-        this.appNames = appNames;
+    public AppRecyclerViewAdapter(List<ApplicationInfo> apps, PackageManager pm, Resources res) {
         this.apps = apps;
         this.pm = pm;
         this.res = res;
@@ -90,6 +92,9 @@ public class AppRecyclerViewAdapter extends RecyclerView.Adapter<AppRecyclerView
     @Override
     public AppViewHolder onCreateViewHolder(ViewGroup parent, int i) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.app_list_item, parent, false);
+        for (int j = 0; j < apps.size(); j++) {
+            appNames.add(apps.get(j).loadLabel(pm).toString());
+        }
         return new AppViewHolder(v);
     }
 

@@ -12,4 +12,5 @@
     <string name="ok">OK</string>
     <string name="updated_app">Updated system app</string>
     <string name="integrate_to_system">Move updates to /system?</string>
+    <string name="need_reboot">Need reboot</string>
 </resources>

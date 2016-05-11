@@ -13,4 +13,5 @@
     <string name="ok">Окей</string>
     <string name="updated_app">Обновленное системное</string>
     <string name="integrate_to_system">Интегрировать обновления в /system?</string>
+    <string name="need_reboot">Нужна перезагрузка</string>
 </resources>

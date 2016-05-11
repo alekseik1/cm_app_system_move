@@ -2,15 +2,12 @@ package com.alex.testapp2;
 
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,19 +21,7 @@ import java.util.List;
 public class MainActivityFragment extends Fragment {
 
     static RecyclerView rv;
-    AlertDialog ad;
-    static Parcelable mListState = null;
-
-    public class App {
-        String appName;
-        String appWhere;
-        Bitmap appIcon;
-        public App(String name, String path, int res) {
-            this.appName = name;
-            this.appWhere = path;
-            this.appIcon = BitmapFactory.decodeResource(getResources(), res);
-        }
-    }
+    SearchView searchView;
 
     public MainActivityFragment() {
     }
@@ -62,13 +47,40 @@ public class MainActivityFragment extends Fragment {
             }
         }
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
-        AppRecyclerViewAdapter adapter = new AppRecyclerViewAdapter(apps, appNames, getContext().getPackageManager(), getResources());
+        AppRecyclerViewAdapter adapter = new AppRecyclerViewAdapter(apps, getContext().getPackageManager(), getResources());
         rv = (RecyclerView) getView().findViewById(R.id.rv);
+        searchView = (SearchView) getActivity().findViewById(R.id.searchView);
         RecyclerView.ItemAnimator itemAnimator = new DefaultItemAnimator();
         rv.setItemAnimator(itemAnimator);
         RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL_LIST);
         rv.setLayoutManager(llm);
         rv.setAdapter(adapter);
         rv.addItemDecoration(itemDecoration);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                newText = newText.toLowerCase();
+                final List<ApplicationInfo> filteredList = new ArrayList<>();
+                for(ApplicationInfo s: apps) {
+                    if(getAppName(s, getContext().getPackageManager()).toLowerCase().contains(newText)) {
+                        filteredList.add(s);
+                    }
+                }
+                AppRecyclerViewAdapter adapter = new AppRecyclerViewAdapter(filteredList, getContext().getPackageManager(), getResources());
+                rv.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+                return false;
+            }
+        });
     }
+
+    private String getAppName(ApplicationInfo info, PackageManager pm) {
+        return info.loadLabel(pm).toString();
+    }
+
 }
