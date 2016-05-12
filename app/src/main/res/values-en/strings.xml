@@ -14,4 +14,9 @@
     <string name="updated_app">Updated system app</string>
     <string name="integrate_to_system">Move updates to /system?</string>
     <string name="need_reboot">Need reboot</string>
+    <string name="no_busybox_title">No busybox available</string>
+    <string name="no_busybox_message">Keep in mind that transfer to system will not write files to addon.d. Would you like to install Busybox from Play Market?</string>
+    <string name="play_market">Play Market</string>
+    <string name="size">Total size</string>
+    <string name="megabyte">Mbytes</string>
 </resources>

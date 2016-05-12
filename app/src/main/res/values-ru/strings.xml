@@ -14,4 +14,9 @@
     <string name="updated_app">Обновленное системное</string>
     <string name="integrate_to_system">Интегрировать обновления в /system?</string>
     <string name="need_reboot">Нужна перезагрузка</string>
+    <string name="no_busybox_title">Не установлен busybox</string>
+    <string name="no_busybox_message">Без него не перенос будет работать, но файлы приложений не будут прописаны в addon.d. Установить его с маркета?</string>
+    <string name="play_market">Play Market</string>
+    <string name="size">Всего</string>
+    <string name="megabyte">Мбайт</string>
 </resources>

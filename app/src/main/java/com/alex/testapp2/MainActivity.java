@@ -1,5 +1,6 @@
 package com.alex.testapp2;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.PersistableBundle;
@@ -43,10 +44,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        //if(ad != null) ad.show();
+        //ad = null;
+    }
+
+    @Override
     protected void onResumeFragments() {
         super.onResumeFragments();
         if(parcelable != null)
         rv.getLayoutManager().onRestoreInstanceState(parcelable);
+    }
+
+    private AlertDialog noBusybox() {
+        AlertDialog.Builder ab = new AlertDialog.Builder(getApplicationContext());
+        ab.setTitle(R.string.no_busybox_title);
+        ab.setMessage(R.string.no_busybox_message);
+        ab.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                android.os.Process.killProcess(android.os.Process.myPid());
+            }
+        });
+        return ab.create();
     }
 
     @Override

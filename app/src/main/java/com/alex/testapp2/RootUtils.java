@@ -2,19 +2,19 @@ package com.alex.testapp2;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import eu.chainfire.libsuperuser.Shell;
 
-/**
- * Created by aleksei on 21.04.16.
- */
+
 public class RootUtils {
 
     public static final String LIST_FILE_NAME = "/system/addon.d/cm-saved-files.txt";
@@ -23,7 +23,6 @@ public class RootUtils {
     public static void moveToSystem(ApplicationInfo app, Context context) {
         StringBuilder sb = new StringBuilder();
         String appDir;
-        String scriptName = app.loadLabel(context.getPackageManager()).toString().toLowerCase().replace(" ", "");
         String appOldDir;
         appOldDir = sb.append("/data").append(app.sourceDir.substring(app.sourceDir.indexOf("/", 1))).substring(0, sb.indexOf("base.apk"));
         sb.delete(0, sb.length());
@@ -51,13 +50,13 @@ public class RootUtils {
             makeSystemRWState(true);
             cmd.execute("cp -r " + appOldDir + " " + appDir, "rm -rf "+appOldDir);
             if(!cmd.get().isEmpty()) Log.d(LOG_TAG, "Error moving to /system");
-            makeScript(getFiles(appDir), context, scriptName);
+            makeScript(getFiles(appDir));
         } catch(Exception e) {
             e.printStackTrace();
         }
     }
 
-    private static List<String> getFiles(String path) {
+    public static List<String> getFiles(String path) {
         ExecCommand cmd1 = new ExecCommand();
         List<String> result = new ArrayList<>();
         try {
@@ -80,7 +79,7 @@ public class RootUtils {
         throw new IllegalStateException();
     }
 
-    private static String makeScript(List<String> paths, Context context, String scriptName) {
+    private static String makeScript(List<String> paths) {
         ExecCommand cmd = new ExecCommand();
         StringBuilder sb1 = new StringBuilder();
         boolean oldAndroid = true;
@@ -101,8 +100,10 @@ public class RootUtils {
             e.printStackTrace();
         }
         sb1.delete(0, sb1.length());
-        for(String a : realPaths) {
-            sb1.append(a+"\n");
+        if (realPaths != null) {
+            for(String a : realPaths) {
+                sb1.append(a).append("\n");
+            }
         }
         try {
             List<String> res = (new ExecCommand().execute("echo '#!/sbin/sh\n" +
@@ -145,6 +146,40 @@ public class RootUtils {
         return null;
     }
 
+    public static double getAppSize(ApplicationInfo app) {
+        //return getTotalFilesSize(getFiles(app.sourceDir.
+        //       substring(0, app.sourceDir.lastIndexOf("/", app.sourceDir.length()))));
+        String folder = app.sourceDir.substring(0, app.sourceDir.lastIndexOf("/", app.sourceDir.length()));
+        double a = 0;
+        for(File f : listFilesForFolder(folder)) {
+            a+=f.length();
+        }
+        return ((double) Math.round(a/1024/1024*10))/10;
+    }
+
+    public static List<File> listFilesForFolder(String path) {
+        return listFilesForFolder(new File(path));
+    }
+
+    // Here some magic is used. Be careful not to change anything!
+    public static List<File> listFilesForFolder(final File folder) {
+        List<File> res = new ArrayList<>();
+        if(folder.listFiles() != null) {
+            for (final File fileEntry : folder.listFiles()) {
+                if (fileEntry.isDirectory()) {
+                    List<File> q = listFilesForFolder(fileEntry);
+                    for (int i = 0; i < q.size(); i++) {
+                        File w = q.get(i);
+                        res.add(w);
+                    }
+                } else {
+                    res.add(fileEntry);
+                }
+            }
+        }
+        return res;
+    }
+
     public static void moveToUser(ApplicationInfo app, Context context) {
         String appOldDir = app.sourceDir.substring(0, app.sourceDir.indexOf("base.apk", 0));
         StringBuilder sb = new StringBuilder();
@@ -171,7 +206,7 @@ public class RootUtils {
         }
     }
 
-    protected static void makeSystemRWState(boolean makeRW) {
+    public static void makeSystemRWState(boolean makeRW) {
         try {
             ExecCommand cmd = new ExecCommand();
             if(makeRW) {
@@ -182,6 +217,20 @@ public class RootUtils {
         } catch(Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static boolean isBusyboxAvailable() {
+        try {
+            List<String> busybox = (new RootUtils.ExecCommand()).execute("busybox > /dev/null && echo $?").get();
+            if (busybox.get(0).equals("0")) return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static String getAppName(ApplicationInfo info, PackageManager pm) {
+        return info.loadLabel(pm).toString();
     }
 
     public static class ExecCommand extends AsyncTask<String, Void, List<String>> {
