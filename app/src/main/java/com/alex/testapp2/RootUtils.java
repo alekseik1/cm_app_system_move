@@ -57,7 +57,12 @@ public class RootUtils {
     }
 
     public static List<String> getFiles(String path) {
-        ExecCommand cmd1 = new ExecCommand();
+        List<String> res = new ArrayList<>();
+        for (File a : listFilesForFolder(path)) {
+            res.add(a.getPath());
+        }
+        return res;
+        /*ExecCommand cmd1 = new ExecCommand();
         List<String> result = new ArrayList<>();
         try {
             result = cmd1.execute("busybox find " + path + " -type f ").get();
@@ -65,7 +70,7 @@ public class RootUtils {
             e.printStackTrace();
         }
         Log.d(LOG_TAG, path);
-        return result;
+        return result;*/
     }
 
     private static boolean isPathAlreadyInBackupListFile(String path) throws IllegalStateException {
