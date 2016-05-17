@@ -18,4 +18,5 @@
     <string name="play_market">Play Market</string>
     <string name="size">Total size</string>
     <string name="megabyte">Mbytes</string>
+    <string name="show_mem_stats">Memory usage</string>
 </resources>

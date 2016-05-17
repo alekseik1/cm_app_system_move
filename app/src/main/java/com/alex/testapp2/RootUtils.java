@@ -56,6 +56,32 @@ public class RootUtils {
         }
     }
 
+    public static double[] getPartitionSize(String path) {      // Первая переменная - total size, вторая - usedSize, третья - free size
+        try {
+            String s = (new ExecCommand().execute("busybox df -h " + path).get()).get(2);
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < s.length(); i++) {
+                if (s.charAt(i) != ' ') {
+                    sb.append(s.charAt(i));
+                }
+            }
+            String res = sb.toString().substring(0, sb.toString().indexOf(path));
+            if (res.contains("M")) {     // Измерено в мегабайтах
+                res = res.replace('M', ' ');
+            } else if (res.contains("G")) {      // Измерено в гигабайтах (а вдруг)
+                res = res.replace('G', ' ');
+            }
+            res = res.substring(0, res.lastIndexOf(' '));
+            double fullSize = Double.parseDouble(res.substring(0, res.indexOf(' ')));
+            double usedSize = Double.parseDouble(res.substring(res.indexOf(' ') + 1, res.indexOf(' ', res.indexOf(' ') + 1)));
+            double freeSize = Double.parseDouble(res.substring(res.lastIndexOf(' '), res.length()));
+            return (new double[]{fullSize, usedSize, freeSize});
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static List<String> getFiles(String path) {
         List<String> res = new ArrayList<>();
         for (File a : listFilesForFolder(path)) {

@@ -19,4 +19,5 @@
     <string name="play_market">Play Market</string>
     <string name="size">Всего</string>
     <string name="megabyte">Мбайт</string>
+    <string name="show_mem_stats">Использование памяти</string>
 </resources>

@@ -29,62 +29,6 @@ public class AppRecyclerViewAdapter extends RecyclerView.Adapter<AppRecyclerView
     Resources res;
     List<Double> appSize = new ArrayList<>();
 
-    public class AppViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView appName, appWhere, appSize;
-        ImageView appIcon;
-        AlertDialog.Builder ab;
-        AlertDialog ad;
-
-        public AppViewHolder(View v) {
-            super(v);
-            v.setOnClickListener(this);
-            appName = (TextView) v.findViewById(R.id.appName);
-            appWhere = (TextView) v.findViewById(R.id.appWhere);
-            appIcon = (ImageView) v.findViewById(R.id.appIcon);
-            appSize = (TextView) v.findViewById(R.id.appSize);
-        }
-
-        @Override
-        public void onClick(View v) {
-            Log.d("click", String.valueOf(getPosition()));
-            if(ad == null) {
-                ab = new AlertDialog.Builder(v.getContext());
-                final Context context = v.getContext();
-                final View view = v;
-                final Toolbar tv = (Toolbar) v.getRootView().findViewById(R.id.toolbar);
-                final short dest = packageDest(apps.get(getPosition()));
-                if(dest == 0) ab.setMessage(R.string.convert_to_user);
-                else if(dest == 2) ab.setMessage(R.string.convert_to_system);
-                else ab.setMessage(R.string.integrate_to_system);
-                AlertDialog.OnClickListener ocl = new AlertDialog.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if(which == AlertDialog.BUTTON_POSITIVE) {
-                            if(dest == 0) {
-                                RootUtils.moveToUser(apps.get(getPosition()), context);
-                            } else if(dest == 2) {
-                                RootUtils.moveToSystem(apps.get(getPosition()), context);
-                            } else {
-                                RootUtils.moveToSystem(apps.get(getPosition()), context);
-                            }
-                            tv.setSubtitle(R.string.need_reboot);
-                            tv.setSubtitleTextColor(view.getResources().getColor(R.color.orange));
-                        }
-                    }
-                };
-                ab.setPositiveButton(R.string.yes, ocl);
-                ab.setNegativeButton(R.string.no, ocl);
-                ad = ab.create();
-            }
-            try {
-                ad.show();
-            } catch(NullPointerException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     public AppRecyclerViewAdapter(List<ApplicationInfo> apps, PackageManager pm, Resources res) {
         this.apps = apps;
         this.pm = pm;
@@ -94,7 +38,7 @@ public class AppRecyclerViewAdapter extends RecyclerView.Adapter<AppRecyclerView
     @Override
     public AppViewHolder onCreateViewHolder(ViewGroup parent, int i) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.app_list_item, parent, false);
-        for(ApplicationInfo a : apps) {
+        for (ApplicationInfo a : apps) {
             this.appSize.add(RootUtils.getAppSize(a));
         }
         for (ApplicationInfo a : apps) {
@@ -107,6 +51,7 @@ public class AppRecyclerViewAdapter extends RecyclerView.Adapter<AppRecyclerView
     public void onBindViewHolder(AppViewHolder vh, int i) {
         short d = packageDest(apps.get(i));
         vh.appName.setText(appNames.get(i));
+        RootUtils.getPartitionSize("/system");
         vh.appSize.setText(Double.toString(appSize.get(i))+ " MB");
         try {
             vh.appIcon.setImageDrawable(apps.get(i).loadIcon(pm));
@@ -134,5 +79,61 @@ public class AppRecyclerViewAdapter extends RecyclerView.Adapter<AppRecyclerView
     @Override
     public int getItemCount() {
         return apps.size();
+    }
+
+    public class AppViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        TextView appName, appWhere, appSize;
+        ImageView appIcon;
+        AlertDialog.Builder ab;
+        AlertDialog ad;
+
+        public AppViewHolder(View v) {
+            super(v);
+            v.setOnClickListener(this);
+            appName = (TextView) v.findViewById(R.id.appName);
+            appWhere = (TextView) v.findViewById(R.id.appWhere);
+            appIcon = (ImageView) v.findViewById(R.id.appIcon);
+            appSize = (TextView) v.findViewById(R.id.appSize);
+        }
+
+        @Override
+        public void onClick(View v) {
+            Log.d("click", String.valueOf(getPosition()));
+            if (ad == null) {
+                ab = new AlertDialog.Builder(v.getContext());
+                final Context context = v.getContext();
+                final View view = v;
+                final Toolbar tv = (Toolbar) v.getRootView().findViewById(R.id.toolbar);
+                final short dest = packageDest(apps.get(getPosition()));
+                if (dest == 0) ab.setMessage(R.string.convert_to_user);
+                else if (dest == 2) ab.setMessage(R.string.convert_to_system);
+                else ab.setMessage(R.string.integrate_to_system);
+                AlertDialog.OnClickListener ocl = new AlertDialog.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (which == AlertDialog.BUTTON_POSITIVE) {
+                            if (dest == 0) {
+                                RootUtils.moveToUser(apps.get(getPosition()), context);
+                            } else if (dest == 2) {
+                                RootUtils.moveToSystem(apps.get(getPosition()), context);
+                            } else {
+                                RootUtils.moveToSystem(apps.get(getPosition()), context);
+                            }
+                            tv.setSubtitle(R.string.need_reboot);
+                            tv.setSubtitleTextColor(view.getResources().getColor(R.color.orange));
+                        }
+                    }
+                };
+                ab.setPositiveButton(R.string.yes, ocl);
+                ab.setNegativeButton(R.string.no, ocl);
+                ad = ab.create();
+            }
+            try {
+                ad.show();
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

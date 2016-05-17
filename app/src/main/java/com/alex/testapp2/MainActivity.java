@@ -1,6 +1,7 @@
 package com.alex.testapp2;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.PersistableBundle;
@@ -85,8 +86,9 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.action_show_memory_stats:
+                startActivity(new Intent(this, MemoryUsageActivity.class));
         }
 
         return super.onOptionsItemSelected(item);
