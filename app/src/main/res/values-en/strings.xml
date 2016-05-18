@@ -20,4 +20,9 @@
     <string name="size">Total size</string>
     <string name="megabyte">Mbytes</string>
     <string name="show_mem_stats">Memory usage</string>
+    <string name="mem_info_used">Used</string>
+    <string name="mem_info_free">Free</string>
+    <string name="mem_info_total">Total</string>
+    <string name="mem_info_percentage">Percentage</string>
+    <string name="mem_info_partition_name">Partition</string>
 </resources>

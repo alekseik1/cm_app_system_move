@@ -66,16 +66,19 @@ public class RootUtils {
                 }
             }
             String res = sb.toString().substring(0, sb.toString().indexOf(path));
+            double a = -1;
             if (res.contains("M")) {     // Измерено в мегабайтах
                 res = res.replace('M', ' ');
+                a = 0;
             } else if (res.contains("G")) {      // Измерено в гигабайтах (а вдруг)
                 res = res.replace('G', ' ');
+                a = 1;
             }
             res = res.substring(0, res.lastIndexOf(' '));
             double fullSize = Double.parseDouble(res.substring(0, res.indexOf(' ')));
             double usedSize = Double.parseDouble(res.substring(res.indexOf(' ') + 1, res.indexOf(' ', res.indexOf(' ') + 1)));
             double freeSize = Double.parseDouble(res.substring(res.lastIndexOf(' '), res.length()));
-            return (new double[]{fullSize, usedSize, freeSize});
+            return (new double[]{fullSize, usedSize, freeSize, a});
         } catch (Exception e) {
             e.printStackTrace();
         }

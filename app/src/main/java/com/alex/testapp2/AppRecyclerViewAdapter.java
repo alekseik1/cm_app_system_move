@@ -33,17 +33,17 @@ public class AppRecyclerViewAdapter extends RecyclerView.Adapter<AppRecyclerView
         this.apps = apps;
         this.pm = pm;
         this.res = res;
-    }
-
-    @Override
-    public AppViewHolder onCreateViewHolder(ViewGroup parent, int i) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.app_list_item, parent, false);
         for (ApplicationInfo a : apps) {
             this.appSize.add(RootUtils.getAppSize(a));
         }
         for (ApplicationInfo a : apps) {
             this.appNames.add(a.loadLabel(pm).toString());
         }
+    }
+
+    @Override
+    public AppViewHolder onCreateViewHolder(ViewGroup parent, int i) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.app_list_item, parent, false);
         return new AppViewHolder(v);
     }
 
@@ -51,7 +51,6 @@ public class AppRecyclerViewAdapter extends RecyclerView.Adapter<AppRecyclerView
     public void onBindViewHolder(AppViewHolder vh, int i) {
         short d = packageDest(apps.get(i));
         vh.appName.setText(appNames.get(i));
-        RootUtils.getPartitionSize("/system");
         vh.appSize.setText(Double.toString(appSize.get(i))+ " MB");
         try {
             vh.appIcon.setImageDrawable(apps.get(i).loadIcon(pm));

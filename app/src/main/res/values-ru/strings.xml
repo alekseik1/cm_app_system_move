@@ -20,4 +20,9 @@
     <string name="size">Всего</string>
     <string name="megabyte">Мбайт</string>
     <string name="show_mem_stats">Использование памяти</string>
+    <string name="mem_info_used">Занято</string>
+    <string name="mem_info_free">Свободно</string>
+    <string name="mem_info_total">Всего</string>
+    <string name="mem_info_percentage">Процент</string>
+    <string name="mem_info_partition_name">Раздел</string>
 </resources>
